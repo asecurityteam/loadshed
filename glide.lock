@@ -1,0 +1,24 @@
+hash: 6f47b7e5aae690ed889417ed048b41a87d607d74e7352275dd7b4a850d6b6470
+updated: 2017-10-23T07:47:21.010647-05:00
+imports:
+- name: bitbucket.org/atlassian/rolling
+  version: 495426f079572c9736dd3daab7e054f95ed8b4ff
+  repo: git@bitbucket.org:atlassian/rolling
+  vcs: git
+- name: github.com/go-ole/go-ole
+  version: 2ecd927eaf828c4fc088fae349b28eed1480ff56
+  subpackages:
+  - oleutil
+- name: github.com/shirou/gopsutil
+  version: 48fc5612898a1213aa5d6a0fb2d4f7b968e898fb
+  subpackages:
+  - cpu
+  - internal/common
+- name: github.com/StackExchange/wmi
+  version: ea383cf3ba6ec950874b8486cd72356d007c768f
+- name: golang.org/x/sys
+  version: 8dbc5d05d6edcc104950cc299a1ce6641235bc86
+  subpackages:
+  - unix
+  - windows
+testImports: []

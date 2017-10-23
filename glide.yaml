@@ -1,0 +1,9 @@
+package: bitbucket.org/atlassian/loadshed
+import:
+- package: bitbucket.org/atlassian/rolling
+  repo: git@bitbucket.org:atlassian/rolling
+  vcs: git
+  version: ^1.0.0
+- package: github.com/shirou/gopsutil
+  subpackages:
+  - cpu
