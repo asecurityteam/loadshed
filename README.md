@@ -72,7 +72,7 @@ var bucketSize = time.Second
 var buckets = 10
 var preallocationHint = 2000
 var middleware = loadshed.NewMiddleware(
-  loadshed.AverageLatency(lowerThreshold, upperThreshold, bucketSize, buckets, preallocationHint),
+  loadshed.AverageLatency(lowerThreshold, upperThreshold, bucketSize, buckets, preallocationHint, requiredPoints),
 )
 ```
 
@@ -88,6 +88,11 @@ in the window grows beyond the lower threshold then the middleware will begin
 rejecting new requests. If the latency exceeds the upper threshold then all new
 requests will be rejected until the average drops again. This will happen over
 time either as outliers expire or until the entire window has rolled.
+
+The `requiredPoints` value sets the minimum number of data points recorded in
+the window before the filter takes effect. This is to help ensure that a
+sufficient number of data points are collected to satisfy the aggregate before
+a service begins denying new requests.
 
 The `preallocationHint` is an optional optimisation for the internals of the
 rolling window. It should be set to the projected number of data points that
@@ -110,7 +115,7 @@ var buckets = 10
 var preallocationHint = 2000
 var percentile = 95.0
 var middleware = loadshed.NewMiddleware(
-  loadshed.PercentileLatency(lowerThreshold, upperThreshold, bucketSize, buckets, preallocationHint, percentile),
+  loadshed.PercentileLatency(lowerThreshold, upperThreshold, bucketSize, buckets, preallocationHint, requiredPoints, percentile),
 )
 ```
 

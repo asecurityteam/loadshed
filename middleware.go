@@ -45,13 +45,13 @@ const defaultHint = 2500
 // and number of buckets. The preallocHint is an optimisation for keeping the
 // number of alloc calls low. If the hint is zero then a default value is
 // used.
-func AverageLatency(lower float64, upper float64, bucketSize time.Duration, buckets int, preallocHint int) Option {
+func AverageLatency(lower float64, upper float64, bucketSize time.Duration, buckets int, preallocHint int, requiredPoints int) Option {
 	return func(m *Middleware) *Middleware {
 		if preallocHint < 1 {
 			preallocHint = defaultHint
 		}
 		var w = rolling.NewTimeWindow(bucketSize, buckets, preallocHint)
-		var a = rolling.NewAverageAggregator(w)
+		var a = rolling.NewLimitedAggregator(requiredPoints, w, rolling.NewAverageAggregator(w))
 		m.aggregators = append(m.aggregators, a)
 		m.next = NewLatencyTrackingMiddleware(w)(m.next)
 		return m
@@ -62,13 +62,13 @@ func AverageLatency(lower float64, upper float64, bucketSize time.Duration, buck
 // aggregation is computed as a percentile of the data recorded rather than an
 // average. The percentile should be given as N%. For example, 95.0 or 99.0.
 // Fractional percentiles, like 99.9, are also valid.
-func PercentileLatency(lower float64, upper float64, bucketSize time.Duration, buckets int, preallocHint int, percentile float64) Option {
+func PercentileLatency(lower float64, upper float64, bucketSize time.Duration, buckets int, preallocHint int, requiredPoints int, percentile float64) Option {
 	return func(m *Middleware) *Middleware {
 		if preallocHint < 1 {
 			preallocHint = defaultHint
 		}
 		var w = rolling.NewTimeWindow(bucketSize, buckets, preallocHint)
-		var a = rolling.NewPercentileAggregator(percentile, w, preallocHint)
+		var a = rolling.NewLimitedAggregator(requiredPoints, w, rolling.NewPercentileAggregator(percentile, w, preallocHint))
 		m.aggregators = append(m.aggregators, a)
 		m.next = NewLatencyTrackingMiddleware(w)(m.next)
 		return m
