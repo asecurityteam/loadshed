@@ -18,8 +18,8 @@ func TestLatencyMiddleware(t *testing.T) {
 	var r, _ = http.NewRequest(http.MethodGet, "/", nil)
 	var w = httptest.NewRecorder()
 	handler.ServeHTTP(w, r)
-	var a = rolling.NewSumAggregator(window)
-	var result = a.Aggregate()
+	var a = rolling.NewSumRollup(window, "")
+	var result = a.Aggregate().Value
 	if result < (5*time.Millisecond).Seconds() || result > (6*time.Millisecond).Seconds() {
 		t.Fatalf("incorrect latency record: %f", result)
 	}

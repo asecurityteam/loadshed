@@ -1,6 +1,8 @@
 package loadshed
 
 import (
+	"context"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"time"
@@ -16,7 +18,7 @@ type Option func(*Middleware) *Middleware
 // percentage of traffic once the average CPU usage is between lower and upper.
 func CPU(lower float64, upper float64, pollingInterval time.Duration, windowSize int) Option {
 	return func(m *Middleware) *Middleware {
-		m.aggregators = append(m.aggregators, rolling.NewPercentageAggregator(NewAvgCPU(pollingInterval, windowSize), lower, upper))
+		m.aggregators = append(m.aggregators, rolling.NewPercentageRollup(NewAvgCPU(pollingInterval, windowSize), lower, upper, "ChanceCPU"))
 		return m
 	}
 }
@@ -30,7 +32,7 @@ func Concurrency(lower int, upper int, wg *WaitGroup) Option {
 		if wg == nil {
 			wg = NewWaitGroup()
 		}
-		m.aggregators = append(m.aggregators, rolling.NewPercentageAggregator(wg, float64(lower), float64(upper)))
+		m.aggregators = append(m.aggregators, rolling.NewPercentageRollup(wg, float64(lower), float64(upper), "ChanceConcurrency"))
 		m.next = NewConcurrencyTrackingMiddleware(wg)(m.next)
 		return m
 	}
@@ -51,7 +53,7 @@ func AverageLatency(lower float64, upper float64, bucketSize time.Duration, buck
 			preallocHint = defaultHint
 		}
 		var w = rolling.NewTimeWindow(bucketSize, buckets, preallocHint)
-		var a = rolling.NewLimitedAggregator(requiredPoints, w, rolling.NewAverageAggregator(w))
+		var a = rolling.NewLimitedRollup(requiredPoints, w, rolling.NewPercentageRollup(rolling.NewAverageRollup(w, "AverageLatency"), lower, upper, "ChanceAverageLatency"))
 		m.aggregators = append(m.aggregators, a)
 		m.next = NewLatencyTrackingMiddleware(w)(m.next)
 		return m
@@ -68,7 +70,7 @@ func PercentileLatency(lower float64, upper float64, bucketSize time.Duration, b
 			preallocHint = defaultHint
 		}
 		var w = rolling.NewTimeWindow(bucketSize, buckets, preallocHint)
-		var a = rolling.NewLimitedAggregator(requiredPoints, w, rolling.NewPercentileAggregator(percentile, w, preallocHint))
+		var a = rolling.NewLimitedRollup(requiredPoints, w, rolling.NewPercentageRollup(rolling.NewPercentileRollup(percentile, w, preallocHint, fmt.Sprintf("P%fLatency", percentile)), lower, upper, fmt.Sprintf("ChanceP%fLatency", percentile)))
 		m.aggregators = append(m.aggregators, a)
 		m.next = NewLatencyTrackingMiddleware(w)(m.next)
 		return m
@@ -101,16 +103,21 @@ type Middleware struct {
 	next        http.Handler
 	aggregators []rolling.Aggregator
 	chain       []func(http.Handler) http.Handler
-	aggregator  rolling.Aggregator
 	random      func() float64
 	callback    http.Handler
 }
 
 func (m *Middleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var evaluation = m.aggregator.Aggregate()
+	var result *rolling.Aggregate
+	for _, aggregator := range m.aggregators {
+		var r = aggregator.Aggregate()
+		if result == nil || r.Value > result.Value {
+			result = r
+		}
+	}
 	var chance = m.random()
-	if chance < evaluation {
-		m.callback.ServeHTTP(w, r)
+	if chance < result.Value {
+		m.callback.ServeHTTP(w, r.WithContext(NewContext(r.Context(), result)))
 		return
 	}
 	m.next.ServeHTTP(w, r)
@@ -120,7 +127,7 @@ func defaultCallback(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusServiceUnavailable)
 }
 
-var zeroAggregator = rolling.NewSumAggregator(rolling.NewPointWindow(1))
+var zeroAggregator = rolling.NewSumRollup(rolling.NewPointWindow(1), "Zero")
 
 // NewMiddlware generates an http.Handler wrapper that sheds load based
 // on some definition of system load.
@@ -134,7 +141,25 @@ func NewMiddlware(options ...Option) func(http.Handler) http.Handler {
 		if len(m.aggregators) < 1 {
 			m.aggregators = append(m.aggregators, zeroAggregator)
 		}
-		m.aggregator = rolling.NewMaxAggregator(rolling.NewAggregatorIterator(m.aggregators...))
 		return m
 	}
+}
+
+type ctxKey string
+
+var key = ctxKey("loadshed")
+
+// NewContext inserts an aggregate into the context after a request has been
+// rejected.
+func NewContext(ctx context.Context, val *rolling.Aggregate) context.Context {
+	return context.WithValue(ctx, key, val)
+}
+
+// FromContext extracts an aggregate from the context after a request has
+// been rejected.
+func FromContext(ctx context.Context) *rolling.Aggregate {
+	if v, ok := ctx.Value(key).(*rolling.Aggregate); ok {
+		return v
+	}
+	return nil
 }
