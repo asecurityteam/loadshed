@@ -31,7 +31,7 @@ func TestConcurrencyOption(t *testing.T) {
 }
 
 func TestAverageLatencyOption(t *testing.T) {
-	var o = AverageLatency(.1, 1.0, time.Millisecond, 1000, 0)
+	var o = AverageLatency(.1, 1.0, time.Millisecond, 1000, 0, 0)
 	var m = &Middleware{}
 	m = o(m)
 	if len(m.aggregators) != 1 {
@@ -43,7 +43,7 @@ func TestAverageLatencyOption(t *testing.T) {
 }
 
 func TestPercentileLatencyOption(t *testing.T) {
-	var o = PercentileLatency(.1, 1.0, time.Millisecond, 1000, 0, 99.9)
+	var o = PercentileLatency(.1, 1.0, time.Millisecond, 1000, 0, 0, 99.9)
 	var m = &Middleware{}
 	m = o(m)
 	if len(m.aggregators) != 1 {
