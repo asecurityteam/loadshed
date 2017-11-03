@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"sync"
 	"sync/atomic"
+
+	"bitbucket.org/atlassian/rolling"
 )
 
 // WaitGroup wraps a sync.WaitGroup to make it usable as a load shedding tool.
@@ -25,8 +27,12 @@ func NewWaitGroup() *WaitGroup {
 }
 
 // Aggregate returns the current concurrency value
-func (c *WaitGroup) Aggregate() float64 {
-	return float64(atomic.LoadInt32(c.concurrent))
+func (c *WaitGroup) Aggregate() *rolling.Aggregate {
+	return &rolling.Aggregate{
+		Source: nil,
+		Name:   "WaitGroup",
+		Value:  float64(atomic.LoadInt32(c.concurrent)),
+	}
 }
 
 // Add some number of concurrent operations.

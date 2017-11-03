@@ -72,7 +72,7 @@ func TestCallbackOption(t *testing.T) {
 
 func TestAggregatorOption(t *testing.T) {
 	var w = rolling.NewPointWindow(1)
-	var a = rolling.NewSumAggregator(w)
+	var a = rolling.NewSumRollup(w, "")
 	var o = Aggregator(a)
 	var m = &Middleware{}
 	m = o(m)
@@ -112,7 +112,7 @@ func TestMiddlwareDefaultOptions(t *testing.T) {
 func TestMiddlewareDefaultCallback(t *testing.T) {
 	var window = rolling.NewPointWindow(1)
 	window.Feed(1)
-	var m = NewMiddlware(Aggregator(rolling.NewSumAggregator(window)))
+	var m = NewMiddlware(Aggregator(rolling.NewSumRollup(window, "")))
 	var handler = m(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	var r, _ = http.NewRequest(http.MethodGet, "/", nil)
 	var w = httptest.NewRecorder()

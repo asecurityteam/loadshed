@@ -1,8 +1,8 @@
-hash: 6f47b7e5aae690ed889417ed048b41a87d607d74e7352275dd7b4a850d6b6470
-updated: 2017-10-23T07:47:21.010647-05:00
+hash: a5753256ef7f31d34fff8266803b50c1b237e1e72537f63f6f6d7dc1cab991df
+updated: 2017-10-31T07:48:36.219761-05:00
 imports:
 - name: bitbucket.org/atlassian/rolling
-  version: 495426f079572c9736dd3daab7e054f95ed8b4ff
+  version: 6011875bcfaf2454565ce1ab69462f2cabd5ebbc
   repo: git@bitbucket.org:atlassian/rolling
   vcs: git
 - name: github.com/go-ole/go-ole
@@ -17,7 +17,7 @@ imports:
 - name: github.com/StackExchange/wmi
   version: ea383cf3ba6ec950874b8486cd72356d007c768f
 - name: golang.org/x/sys
-  version: 8dbc5d05d6edcc104950cc299a1ce6641235bc86
+  version: 95c6576299259db960f6c5b9b69ea52422860fce
   subpackages:
   - unix
   - windows
