@@ -1,23 +1,42 @@
 package loadshed
 
 import (
-	"net/http"
-	"net/http/httptest"
+	"fmt"
 	"testing"
 	"time"
 
 	"bitbucket.org/atlassian/rolling"
 )
 
-func TestLatencyMiddleware(t *testing.T) {
+func TestLatencyDecorator(t *testing.T) {
 	var window = rolling.NewPointWindow(1)
-	var middleware = NewLatencyTrackingMiddleware(window)
-	var handler = middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	var decorator = newLatencyTrackingDecorator(window)
+	var wrap = decorator.Wrap(func() error {
 		time.Sleep(5 * time.Millisecond)
-	}))
-	var r, _ = http.NewRequest(http.MethodGet, "/", nil)
-	var w = httptest.NewRecorder()
-	handler.ServeHTTP(w, r)
+		return nil
+	})
+	var e = wrap()
+	if e != nil {
+		t.Fatal("Unexpected error")
+	}
+	var a = rolling.NewSumRollup(window, "")
+	var result = a.Aggregate().Value
+	if result < (5*time.Millisecond).Seconds() || result > (6*time.Millisecond).Seconds() {
+		t.Fatalf("incorrect latency record: %f", result)
+	}
+}
+
+func TestLatencyDecoratorError(t *testing.T) {
+	var window = rolling.NewPointWindow(1)
+	var decorator = newLatencyTrackingDecorator(window)
+	var wrap = decorator.Wrap(func() error {
+		time.Sleep(5 * time.Millisecond)
+		return fmt.Errorf("")
+	})
+	var e = wrap()
+	if e == nil {
+		t.Fatal("Expected error")
+	}
 	var a = rolling.NewSumRollup(window, "")
 	var result = a.Aggregate().Value
 	if result < (5*time.Millisecond).Seconds() || result > (6*time.Millisecond).Seconds() {

@@ -1,10 +1,6 @@
 package loadshed
 
-import (
-	"net/http"
-	"net/http/httptest"
-	"testing"
-)
+import "testing"
 
 func TestWaitGroup(t *testing.T) {
 	var wg = NewWaitGroup()
@@ -18,17 +14,17 @@ func TestWaitGroup(t *testing.T) {
 	}
 }
 
-func TestConcurrencyMiddleware(t *testing.T) {
+func TestConcurrencyDecorator(t *testing.T) {
 	var wg = NewWaitGroup()
-	var middleware = NewConcurrencyTrackingMiddleware(wg)
-	var handler = middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	var decorator = newConcurrencyTrackingDecorator(wg)
+
+	var d = decorator.Wrap(func() error {
 		if wg.Aggregate().Value != 1 {
 			t.Fatalf("wrong internal count: %f", wg.Aggregate().Value)
 		}
-	}))
-	var r, _ = http.NewRequest(http.MethodGet, "/", nil)
-	var w = httptest.NewRecorder()
-	handler.ServeHTTP(w, r)
+		return nil
+	})
+	d()
 	if wg.Aggregate().Value != 0 {
 		t.Fatalf("wrong internal count: %f", wg.Aggregate().Value)
 	}
