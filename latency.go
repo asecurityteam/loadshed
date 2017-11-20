@@ -1,27 +1,27 @@
 package loadshed
 
 import (
-	"net/http"
 	"time"
 
 	"bitbucket.org/atlassian/rolling"
 )
 
-type latencyMiddleware struct {
+type latencyDecorator struct {
 	feeder rolling.Feeder
-	next   http.Handler
 }
 
-func (h *latencyMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var start = time.Now()
-	h.next.ServeHTTP(w, r)
-	h.feeder.Feed(time.Since(start).Seconds())
-}
-
-// NewLatencyTrackingMiddleware tracks latencies of HTTP requests using a given
-// rollingdwindow.Feeder.
-func NewLatencyTrackingMiddleware(feeder rolling.Feeder) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return &latencyMiddleware{feeder, next}
+func (h *latencyDecorator) Wrap(next func() error) func() error {
+	return func() error {
+		var start = time.Now()
+		var e error
+		e = next()
+		h.feeder.Feed(time.Since(start).Seconds())
+		return e
 	}
+}
+
+// newLatencyTrackingDecorator tracks latencies of an acion using a given
+// rollingdwindow.Feeder.
+func newLatencyTrackingDecorator(feeder rolling.Feeder) wrapper {
+	return &latencyDecorator{feeder}
 }

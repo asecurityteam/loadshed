@@ -1,7 +1,6 @@
 package loadshed
 
 import (
-	"net/http"
 	"sync"
 	"sync/atomic"
 
@@ -52,21 +51,20 @@ func (c *WaitGroup) Wait() {
 	c.WaitGroup.Wait()
 }
 
-type concurrencyMiddleware struct {
-	next http.Handler
-	wg   *WaitGroup
+type concurrencyDecorator struct {
+	wg *WaitGroup
 }
 
-func (h *concurrencyMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.wg.Add(1)
-	defer h.wg.Done()
-	h.next.ServeHTTP(w, r)
-}
-
-// NewConcurrencyTrackingMiddleware tracks concurrent HTTP requests using the
-// given WaitGroup.
-func NewConcurrencyTrackingMiddleware(wg *WaitGroup) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return &concurrencyMiddleware{next, wg}
+func (h *concurrencyDecorator) Wrap(next func() error) func() error {
+	return func() error {
+		h.wg.Add(1)
+		defer h.wg.Done()
+		return next()
 	}
+}
+
+// newConcurrencyTrackingDecorator tracks concurrent actions using the
+// given WaitGroup.
+func newConcurrencyTrackingDecorator(wg *WaitGroup) wrapper {
+	return &concurrencyDecorator{wg}
 }

@@ -12,7 +12,7 @@ func TestCPU(t *testing.T) {
 	var points = 3
 	var w = rolling.NewPointWindow(points)
 	var a = rolling.NewAverageRollup(w, "")
-	var c = &AvgCPU{pollingInterval: time.Second, feeder: w, rollup: a}
+	var c = &avgCPU{pollingInterval: time.Second, feeder: w, rollup: a}
 
 	for x := 0; x < points+1; x = x + 1 {
 		c.feed()
@@ -24,7 +24,7 @@ func TestCPU(t *testing.T) {
 }
 
 func TestCPUPolling(t *testing.T) {
-	var c = NewAvgCPU(time.Millisecond, 5)
+	var c = newAvgCPU(time.Millisecond, 5)
 	c.feed()
 	var baseline = c.Aggregate().Value
 	var stop = make(chan bool)
