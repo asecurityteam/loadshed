@@ -60,9 +60,10 @@ type errorRateDecorator struct {
 
 func (h *errorRateDecorator) Wrap(next func() error) func() error {
 	return func() error {
-		h.reqFeeder.Feed(1)
 		var e error
 		e = next()
+		h.reqFeeder.Feed(1)
+
 		if e != nil {
 			h.errFeeder.Feed(1)
 		}
