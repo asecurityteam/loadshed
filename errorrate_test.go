@@ -62,6 +62,34 @@ func TestErrorRateError(t *testing.T) {
 	}
 }
 
+func TestErrorRateErrorTimeBucket(t *testing.T) {
+	var bucketSize = time.Millisecond
+	var timeWindow = 5
+	var preallocHint = 5
+
+	var errWindow = rolling.NewTimeWindow(bucketSize, timeWindow, preallocHint)
+	var reqWindow = rolling.NewTimeWindow(bucketSize, timeWindow, preallocHint)
+	var decorator = newErrorRateDecorator(errWindow, reqWindow)
+	var wrap = decorator.Wrap(func() error {
+		time.Sleep(time.Duration(timeWindow+1) * bucketSize)
+		return fmt.Errorf("")
+	})
+	var e = wrap()
+	if e == nil {
+		t.Fatal("Expected error")
+	}
+	var a = rolling.NewSumRollup(errWindow, "")
+	var eresult = a.Aggregate().Value
+	if int(eresult) != 1 {
+		t.Fatalf("Unexpected result %f", eresult)
+	}
+	var b = rolling.NewSumRollup(reqWindow, "")
+	var result = b.Aggregate().Value
+	if int(result) != 1 {
+		t.Fatalf("Unexpected result %f", eresult)
+	}
+}
+
 func TestErrRateRollUp(t *testing.T) {
 	var minReqCount = 2
 	var bucketSize = time.Millisecond
