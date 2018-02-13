@@ -5,6 +5,7 @@ pipelines:
         script:
           - mkdir -p /go/src/bitbucket.org/stride/loadshed
           - cp -R ./* /go/src/bitbucket.org/stride/loadshed
+          - cd /go/src/bitbucket.org/stride/loadshed
           - go get -u golang.org/x/tools/cmd/goimports
           - if [[ "$(goimports -l -d .)" != "" ]]; then echo "$(goimports -l -d .)" && exit 1; fi
           - go get -u github.com/alecthomas/gometalinter
