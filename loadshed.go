@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"bitbucket.org/atlassian/rolling"
+	"github.com/asecurityteam/rolling"
 )
 
 // Doer is an interface representing load shedding interface with Do method

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/atlassian/loadshed"
+	"github.com/asecurityteam/loadshed"
 )
 
 type fixtureTransport struct {

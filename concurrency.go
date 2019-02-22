@@ -4,7 +4,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"bitbucket.org/atlassian/rolling"
+	"github.com/asecurityteam/rolling"
 )
 
 // WaitGroup wraps a sync.WaitGroup to make it usable as a load shedding tool.
@@ -15,7 +15,7 @@ type WaitGroup struct {
 
 // NewWaitGroup generates a specialised WaitGroup that tracks the number of
 // concurrent operations. This implementation also satisfies the Aggregator
-// interface from bitbucket.org/atlassian/rolling so that this can be fed into
+// interface from github.com/asecurityteam/rolling so that this can be fed into
 // a calculation of system health.
 func NewWaitGroup() *WaitGroup {
 	var w = &WaitGroup{

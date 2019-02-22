@@ -1,6 +1,6 @@
-package: bitbucket.org/atlassian/loadshed
+package: github.com/asecurityteam/loadshed
 import:
-- package: bitbucket.org/atlassian/rolling
+- package: github.com/asecurityteam/rolling
   vcs: git
   version: ^0.0.2
 - package: github.com/shirou/gopsutil

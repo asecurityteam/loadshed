@@ -3,7 +3,7 @@ package loadshed
 import (
 	"fmt"
 
-	"bitbucket.org/atlassian/rolling"
+	"github.com/asecurityteam/rolling"
 )
 
 // errRate is a struct representing the different feeders and aggregators to calculate error rate

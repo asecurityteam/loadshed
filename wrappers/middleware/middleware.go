@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"bitbucket.org/atlassian/loadshed"
-	"bitbucket.org/atlassian/rolling"
+	"github.com/asecurityteam/loadshed"
+	"github.com/asecurityteam/rolling"
 )
 
 // Option is a wrapper for middleware

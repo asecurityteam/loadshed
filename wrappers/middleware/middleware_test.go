@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"bitbucket.org/atlassian/loadshed"
+	"github.com/asecurityteam/loadshed"
 )
 
 func TestMiddleware(t *testing.T) {
