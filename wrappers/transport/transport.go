@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"bitbucket.org/atlassian/loadshed"
-	"bitbucket.org/atlassian/rolling"
+	"github.com/asecurityteam/loadshed"
+	"github.com/asecurityteam/rolling"
 )
 
 // Option is a wrapper around the transport modifying its behavior

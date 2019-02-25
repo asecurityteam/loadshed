@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/atlassian/rolling"
+	"github.com/asecurityteam/rolling"
 )
 
 func TestLatencyDecorator(t *testing.T) {

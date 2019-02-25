@@ -3,7 +3,7 @@ package loadshed
 import (
 	"time"
 
-	"bitbucket.org/atlassian/rolling"
+	"github.com/asecurityteam/rolling"
 	pscpu "github.com/shirou/gopsutil/cpu"
 )
 

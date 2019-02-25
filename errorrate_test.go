@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/atlassian/rolling"
+	"github.com/asecurityteam/rolling"
 )
 
 func TestErrorRateNoError(t *testing.T) {

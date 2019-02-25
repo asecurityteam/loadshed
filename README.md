@@ -1,11 +1,11 @@
-# loadshed #
+# loadshed
 
 **Proportional HTTP request rejection based on system load.**
 
 This library provides options to loadshed either a service by using a http middleware
 or calls to a dependent service using http transport.
 
-## Options ##
+## Options
 
 This package exports a middleware via the `middleware.New()` method that returns
 a `func(http.Handler) http.Handler` which should be compatible with virtually
@@ -23,7 +23,7 @@ Both the middleware and transport have middleware and transport options you
 can pass in for callbacks and error codes apart from loadshed options. They have
 been incorporated in the examples below.
 
-### CPU ###
+### CPU
 
 The `CPU` option enables rejection of new requests based on CPU usage of the
 host. The example below is for a middleware, with a callback option and cpu
@@ -32,7 +32,7 @@ loadshedder:
 ```golang
 
 import (
-  loadshedmiddleware "bitbucket.org/atlassian/loadshed/wrappers/middleware"
+  loadshedmiddleware "github.com/asecurityteam/loadshed/wrappers/middleware"
 )
 
 var lowerThreshold = 0.6
@@ -57,7 +57,7 @@ proportional to the distance of the average between the two thresholds. Once the
 value exceed the upper threshold then all new requests are rejected until it
 lowers again.
 
-### Concurrency ###
+### Concurrency
 
 The `Concurrency` option enables rejections of new requests when there are too
 many requests currently in flight.
@@ -65,7 +65,7 @@ many requests currently in flight.
 ```golang
 
 import (
-  loadshedmiddleware "bitbucket.org/atlassian/loadshed/wrappers/middleware"
+  loadshedmiddleware "github.com/asecurityteam/loadshed/wrappers/middleware"
 )
 
 var lowerThreshold = 2500
@@ -88,7 +88,7 @@ compatible with the metric aggregation system used by the middleware. The
 corresponding `Done()` call as each request completes. This is intended to
 act as a drop-in replacement for graceful shutdown uses of `sync.WaitGroup`.
 
-### AverageLatency ###
+### AverageLatency
 
 The `AverageLatency` option enables rejection of new requests when the average
 latency of all requests within a rolling time window is too high.
@@ -96,7 +96,7 @@ latency of all requests within a rolling time window is too high.
 ```golang
 
 import (
-  loadshedmiddleware "bitbucket.org/atlassian/loadshed/wrappers/middleware"
+  loadshedmiddleware "github.com/asecurityteam/loadshed/wrappers/middleware"
 )
 
 var lowerThreshold = .2
@@ -138,7 +138,7 @@ service expects to receive approximately 2,000 requests per second. This value
 is only an optimisation and can be left as `0` if the projected rate is not
 known.
 
-### PercentileLatency ###
+### PercentileLatency
 
 The `PercentileLatency` option works exactly the same as the `AverageLatency`
 option except that it is based on a rolling percentile calculation rather than
@@ -147,7 +147,7 @@ an average.
 ```golang
 
 import (
-  loadshedmiddleware "bitbucket.org/atlassian/loadshed/wrappers/middleware"
+  loadshedmiddleware "github.com/asecurityteam/loadshed/wrappers/middleware"
 )
 
 var lowerThreshold = .2
@@ -162,7 +162,7 @@ var middleware = loadshedmiddleware.New(
 )
 ```
 
-### ErrorRate ###
+### ErrorRate
 
 The `ErrorRate` option enables rejection of new requests when the error
 rate of all requests within a rolling time window is too high. This requires
@@ -171,7 +171,7 @@ are to be accounted for in the error rate.
 
 ```golang
 import (
-  loadshedtransport "bitbucket.org/atlassian/loadshed/wrappers/transport"
+  loadshedtransport "github.com/asecurityteam/loadshed/wrappers/transport"
 )
 
 var lowerThreshold = .2
@@ -188,9 +188,9 @@ var transport = loadshedtransport.New(
 )
 ```
 
-### Aggregator ###
+### Aggregator
 
-The Aggregator enables injection of custom metrics that are not already included in this package. The option relies on the Aggregator interface provided by bitbucket.org/atlassian/rolling and the given aggregator must return a value that is a percentage of requests to reject between 0.0 and 1.0.
+The Aggregator enables injection of custom metrics that are not already included in this package. The option relies on the Aggregator interface provided by github.com/asecurityteam/rolling and the given aggregator must return a value that is a percentage of requests to reject between 0.0 and 1.0.
 
 ```golang
 // Inject a random amount of chaos when the system is not under load.
@@ -215,8 +215,7 @@ var transport = loadshedtransport.New(
 )
 ```
 
-Contributors
-============
+## Contributors
 
 Pull requests, issues and comments welcome. For pull requests:
 
@@ -243,8 +242,7 @@ those contributing as an individual.
 * [CLA for corporate contributors](https://na2.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=e1c17c66-ca4d-4aab-a953-2c231af4a20b)
 * [CLA for individuals](https://na2.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=3f94fbdc-2fbe-46ac-b14c-5d152700ae5d)
 
-License
-========
+## License
 
 Copyright (c) 2017 Atlassian and others.
 Apache 2.0 licensed, see [LICENSE.txt](LICENSE.txt) file.

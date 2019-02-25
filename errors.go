@@ -3,7 +3,7 @@ package loadshed
 import (
 	"fmt"
 
-	"bitbucket.org/atlassian/rolling"
+	"github.com/asecurityteam/rolling"
 )
 
 // Rejected is error returned when a request is rejected because of load shedding
