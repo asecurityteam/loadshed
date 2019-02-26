@@ -13,8 +13,7 @@ type latencyDecorator struct {
 func (h *latencyDecorator) Wrap(next func() error) func() error {
 	return func() error {
 		var start = time.Now()
-		var e error
-		e = next()
+		var e = next()
 		h.feeder.Feed(time.Since(start).Seconds())
 		return e
 	}

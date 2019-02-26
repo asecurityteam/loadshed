@@ -42,7 +42,7 @@ func (era *errRate) Name() string {
 // minReqCount - minimum number of requests required in a time window
 // name - name of the aggregator
 // preallocHint - preallocation hint
-func newErrRate(errWindow rolling.Window, reqWindow rolling.Window, minReqCount int, name string, preallocHint int) *errRate {
+func newErrRate(errWindow rolling.Window, reqWindow rolling.Window, minReqCount int, name string, _ int) *errRate {
 	var errRollup = rolling.NewLimitedRollup(minReqCount, reqWindow, rolling.NewSumRollup(errWindow, fmt.Sprintf("%s-error-count", name)))
 	var reqRollup = rolling.NewSumRollup(reqWindow, fmt.Sprintf("%s-req-count", name))
 
@@ -60,8 +60,7 @@ type errorRateDecorator struct {
 
 func (h *errorRateDecorator) Wrap(next func() error) func() error {
 	return func() error {
-		var e error
-		e = next()
+		var e = next()
 		h.reqFeeder.Feed(1)
 
 		if e != nil {

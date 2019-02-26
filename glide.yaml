@@ -1,8 +1,0 @@
-package: github.com/asecurityteam/loadshed
-import:
-- package: github.com/asecurityteam/rolling
-  vcs: git
-  version: ^0.0.2
-- package: github.com/shirou/gopsutil
-  subpackages:
-  - cpu
