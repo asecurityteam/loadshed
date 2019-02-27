@@ -71,7 +71,7 @@ func (r *fixtureHTTPResponseWriter) ReadFrom(reader io.Reader) (n int64, err err
 }
 
 func TestRespWrapperInterfaces(t *testing.T) {
-	var _ http.CloseNotifier = &fancyWriter{}
+	var _ http.CloseNotifier = &fancyWriter{} // nolint
 	var _ http.Flusher = &fancyWriter{}
 	var _ http.Hijacker = &fancyWriter{}
 	var _ io.ReaderFrom = &fancyWriter{}
@@ -119,7 +119,7 @@ func TestFullFeaturedGetsFancy(t *testing.T) {
 	if _, ok := result.(http.ResponseWriter); !ok {
 		t.Fatal("Did not get a ResponseWriter back.")
 	}
-	if _, ok := result.(http.CloseNotifier); !ok {
+	if _, ok := result.(http.CloseNotifier); !ok { // nolint
 		t.Fatal("Did not get a CloseNotifier back.")
 	}
 	if _, ok := result.(http.Hijacker); !ok {
@@ -178,14 +178,14 @@ func TestBasicWriterCountsBytesWritten(t *testing.T) {
 	var wrapped = &fixtureResponseWriter{}
 	var r = basicWriter{ResponseWriter: wrapped}
 
-	r.Write([]byte(`TEST`))
+	_, _ = r.Write([]byte(`TEST`))
 	if r.BytesWritten() != 4 {
 		t.Fatalf("Expected 4 bytes written. Got %d", r.BytesWritten())
 	}
 	if !wrapped.calledWrite {
 		t.Fatal("Wrapper did not called wrapped implementation.")
 	}
-	r.Write([]byte(`TEST`))
+	_, _ = r.Write([]byte(`TEST`))
 	if r.BytesWritten() != 8 {
 		t.Fatalf("Expected 8 bytes written. Got %d", r.BytesWritten())
 	}
@@ -202,7 +202,7 @@ func TestFancyWriterCloseNotify(t *testing.T) {
 	}
 	var r = wrapWriter(&wrapped)
 
-	r.(http.CloseNotifier).CloseNotify()
+	_ = r.(http.CloseNotifier).CloseNotify() // nolint
 	if !wrapped.calledCloseNotify {
 		t.Fatal("Wrapper did not called wrapped implementation.")
 	}
@@ -219,7 +219,7 @@ func TestFancyWriterHijacker(t *testing.T) {
 	}
 	var r = wrapWriter(&wrapped)
 
-	r.(http.Hijacker).Hijack()
+	_, _, _ = r.(http.Hijacker).Hijack()
 	if !wrapped.calledHijack {
 		t.Fatal("Wrapper did not called wrapped implementation.")
 	}
@@ -253,7 +253,7 @@ func TestFancyWriterReaderFrom(t *testing.T) {
 	}
 	var r = wrapWriter(&wrapped)
 
-	r.(io.ReaderFrom).ReadFrom(bytes.NewBufferString(`TEST`))
+	_, _ = r.(io.ReaderFrom).ReadFrom(bytes.NewBufferString(`TEST`))
 	if !wrapped.calledReadFrom {
 		t.Fatal("Wrapper did not called wrapped implementation.")
 	}

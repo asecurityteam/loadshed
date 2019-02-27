@@ -24,7 +24,7 @@ func TestConcurrencyDecorator(t *testing.T) {
 		}
 		return nil
 	})
-	d()
+	_ = d()
 	if wg.Aggregate().Value != 0 {
 		t.Fatalf("wrong internal count: %f", wg.Aggregate().Value)
 	}

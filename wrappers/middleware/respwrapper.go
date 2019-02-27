@@ -22,7 +22,7 @@ type writerProxy interface {
 // wrapWriter wraps an http.ResponseWriter, returning a proxy that allows you to
 // hook into various parts of the response process.
 func wrapWriter(w http.ResponseWriter) writerProxy {
-	var _, cn = w.(http.CloseNotifier)
+	var _, cn = w.(http.CloseNotifier) // nolint
 	var _, fl = w.(http.Flusher)
 	var _, hj = w.(http.Hijacker)
 	var _, rf = w.(io.ReaderFrom)
@@ -86,7 +86,7 @@ type fancyWriter struct {
 }
 
 func (f *fancyWriter) CloseNotify() <-chan bool {
-	return f.basicWriter.ResponseWriter.(http.CloseNotifier).CloseNotify()
+	return f.basicWriter.ResponseWriter.(http.CloseNotifier).CloseNotify() // nolint
 }
 
 func (f *fancyWriter) Flush() {

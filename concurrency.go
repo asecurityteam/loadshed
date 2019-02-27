@@ -40,7 +40,7 @@ func (c *WaitGroup) Add(delta int) {
 	atomic.AddInt32(c.concurrent, int32(delta))
 }
 
-// Done markes an operation as complete and removes the tracking.
+// Done marks an operation as complete and removes the tracking.
 func (c *WaitGroup) Done() {
 	c.WaitGroup.Done()
 	atomic.AddInt32(c.concurrent, -1)
