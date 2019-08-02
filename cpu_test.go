@@ -9,7 +9,7 @@ import (
 )
 
 func TestCPU(t *testing.T) {
-	t.Skip("test is too flaky to run. ticket in the backlog")
+	// t.Skip("test is too flaky to run. ticket in the backlog")
 	var points = 3
 	var w = rolling.NewPointWindow(points)
 	var a = rolling.NewAverageRollup(w, "")
@@ -25,7 +25,7 @@ func TestCPU(t *testing.T) {
 }
 
 func TestCPUPolling(t *testing.T) {
-	t.Skip("test is too flaky to run. ticket in the backlog")
+	// t.Skip("test is too flaky to run. ticket in the backlog")
 	var c = newAvgCPU(time.Millisecond, 5)
 	c.feed()
 	var baseline = c.Aggregate().Value
