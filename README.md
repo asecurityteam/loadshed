@@ -1,4 +1,5 @@
 # loadshed
+[![GoDoc](https://godoc.org/github.com/asecurityteam/loadshed?status.svg)](https://godoc.org/github.com/asecurityteam/loadshed)
 
 **Proportional HTTP request rejection based on system load.**
 
