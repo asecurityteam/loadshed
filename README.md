@@ -1,5 +1,7 @@
 # loadshed
 [![GoDoc](https://godoc.org/github.com/asecurityteam/loadshed?status.svg)](https://godoc.org/github.com/asecurityteam/loadshed)
+[![Build Status](https://travis-ci.org/asecurityteam/loadshed.png?branch=master)](https://travis-ci.org/asecurityteam/loadshed)
+[![codecov.io](https://codecov.io/github/asecurityteam/loadshed/coverage.svg?branch=master)](https://codecov.io/github/asecurityteam/loadshed?branch=master)
 
 **Proportional HTTP request rejection based on system load.**
 
