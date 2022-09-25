@@ -1,6 +1,6 @@
 module github.com/asecurityteam/loadshed
 
-go 1.12
+go 1.19
 
 require (
 	github.com/asecurityteam/rolling v0.0.0-20171031124617-6011875bcfaf
